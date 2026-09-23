@@ -1,12 +1,28 @@
+```mermaid
 graph TB
-    Patient -->|Books / reschedules / cancels appointment| SchedulingCore[Scheduling Core Engine]
-    ClinicStaff[Clinic Staff] -->|Manages bookings on behalf of patients| SchedulingCore
-    HealthcareProvider[Healthcare Provider] -->|Sets availability, views schedule| SchedulingCore
-    SystemAdministrator[System Administrator] -->|Configures system, manages users & roles| SchedulingCore
+    Patient((Patient))
+    Staff((Clinic Staff))
+    Provider((Healthcare Provider))
+    Admin((System Administrator))
 
-    SchedulingCore -->|Emits confirmation / reminder / late-change events| NotificationService[Notification Service]
-    NotificationService -->|SMS, Email, or Push notification| Patient
+    subgraph PASS["Patient Appointment & Scheduling System"]
+        Core[Scheduling Core Engine]
+    end
 
-    SchedulingCore -->|Reads / writes patient & visit records| EHR[EHR / Patient Records System]
-    SchedulingCore -->|Syncs provider availability| ProviderCalendar[Provider Calendar System]
-    SchedulingCore -->|Processes co-pay / rescheduling fee| PaymentGateway[Payment Gateway]
+    Notif[Notification Service]
+    EHR[(EHR / Patient Records System)]
+    Calendar[(Provider Calendar System)]
+    Payment[Payment Gateway]
+
+    Patient -->|Books / reschedules / cancels appointment| Core
+    Staff -->|Manages bookings on behalf of patients| Core
+    Provider -->|Sets availability, views schedule| Core
+    Admin -->|Configures system, manages users & roles| Core
+
+    Core -->|Emits confirmation / reminder / late-change events| Notif
+    Notif -->|SMS, Email, or Push notification| Patient
+
+    Core -->|Reads / writes patient & visit records| EHR
+    Core -->|Syncs provider availability| Calendar
+    Core -->|Processes co-pay / rescheduling fee| Payment
+```

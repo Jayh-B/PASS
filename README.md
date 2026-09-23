@@ -15,3 +15,32 @@ This diagram shows the Patient Appointment & Scheduling System (PASS) as a singl
 - **Payment Gateway** — processes co-pays and rescheduling fees where applicable
 
 The **Scheduling Core Engine** sits at the center as the system's boundary: everything inside the `PASS` subgraph is what the team is responsible for building, while everything outside it represents a dependency the system talks to but does not own. This distinction matters for scoping — it clarifies which failures are "our bug" versus "an integration issue with a third-party service."
+
+```mermaid
+graph TB
+    Patient((Patient))
+    Staff((Clinic Staff))
+    Provider((Healthcare Provider))
+    Admin((System Administrator))
+
+    subgraph PASS["Patient Appointment & Scheduling System"]
+        Core[Scheduling Core Engine]
+    end
+
+    Notif[Notification Service]
+    EHR[(EHR / Patient Records System)]
+    Calendar[(Provider Calendar System)]
+    Payment[Payment Gateway]
+
+    Patient -->|Books / reschedules / cancels appointment| Core
+    Staff -->|Manages bookings on behalf of patients| Core
+    Provider -->|Sets availability, views schedule| Core
+    Admin -->|Configures system, manages users & roles| Core
+
+    Core -->|Emits confirmation / reminder / late-change events| Notif
+    Notif -->|SMS, Email, or Push notification| Patient
+
+    Core -->|Reads / writes patient & visit records| EHR
+    Core -->|Syncs provider availability| Calendar
+    Core -->|Processes co-pay / rescheduling fee| Payment
+```
